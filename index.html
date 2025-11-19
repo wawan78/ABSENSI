@@ -110,7 +110,10 @@
                     <h3 id="displayUsername" class="font-bold text-gray-800">User</h3>
                     <span id="displayRole" class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">Role</span>
                 </div>
-                <!-- Logout button removed as requested -->
+                <!-- Tombol Log Out -->
+                <button onclick="logout()" class="text-red-500 text-sm font-bold hover:text-red-700 transition-colors flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg border border-red-100 hover:bg-red-100">
+                    <i class="fas fa-sign-out-alt"></i> Keluar
+                </button>
             </div>
 
             <!-- Input Form -->
@@ -239,7 +242,7 @@
 
     <script>
         // --- KONFIGURASI ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzX-2GMaisGa3vWWUfPkwbnShyYT4Nmi0JJk-OUiUw/dev"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_ViMBIWTrzpGXdAVv8PtEpEd4Z8Yc__oMs6_JrIwichQAXxWojglcvg5wXE8kqxdZ/exec"; 
         const URL_USER_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTAIpCKM-FLkgVPuNA9kEQWlUd_JTi-M1_43FC4mdV65-u83LWPMYkrtwtWBpDGB5Tds3ew9Yeq0H_W/pub?gid=0&single=true&output=csv";
         const URL_STUDENT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLbwyS_IlmifxxFbLRIgC3gvaMoJ-eZWDPhbPlPgb-eSttIvEovN0WzxzzTX1uv7fPgcwaIIhFl_v/pub?output=csv";
 
@@ -356,6 +359,27 @@
                 }
                 loader.style.display = 'none';
             }, 500);
+        }
+
+        // --- LOGOUT SYSTEM ---
+        function logout() {
+            if (confirm("Apakah Anda yakin ingin keluar dari sistem?")) {
+                // Reset State
+                currentUser = null;
+                isPanelOpen = false;
+
+                // UI Reset: Sembunyikan Dashboard dan Panel Bawah
+                document.getElementById('dashboardSection').classList.add('hidden');
+                document.getElementById('bottomPanel').classList.add('hidden');
+                document.getElementById('bottomPanel').classList.add('panel-hidden');
+                
+                // Tampilkan Login
+                document.getElementById('loginSection').classList.remove('hidden');
+                
+                // Reset Form Login & Input
+                document.getElementById('loginForm').reset();
+                closeForm();
+            }
         }
 
         // --- MANAJEMEN FORM & NAVIGASI (BACK FUNCTION) ---
