@@ -41,10 +41,11 @@
 
     <!-- HEADER -->
     <header class="bg-pesantren text-white shadow-lg z-20 relative">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-white p-1 rounded-full">
-                    <i class="fas fa-mosque text-pesantren text-xl"></i>
+                <!-- LOGO PESANTREN -->
+                <div class="bg-white p-1 rounded-full shadow-md">
+                    <img src="https://assets-web-du.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2019/01/05054727/logodu.png" alt="Logo DU" class="h-10 w-10 object-contain">
                 </div>
                 <div>
                     <h1 class="font-bold text-lg leading-none">Daarul 'Uluum Lido</h1>
@@ -64,8 +65,9 @@
         <!-- LOGIN SECTION -->
         <div id="loginSection" class="flex items-center justify-center min-h-[80vh]">
             <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-4 border-green-700">
+                <!-- Logo di Login Form juga -->
                 <div class="text-center mb-6">
-                    <i class="fas fa-user-shield text-4xl text-pesantren mb-2"></i>
+                    <img src="https://assets-web-du.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2019/01/05054727/logodu.png" alt="Logo DU" class="h-20 mx-auto mb-4">
                     <h2 class="text-2xl font-bold text-gray-800">Login Petugas</h2>
                     <p class="text-sm text-gray-500">Silakan masuk untuk akses sistem.</p>
                 </div>
@@ -108,7 +110,7 @@
                     <h3 id="displayUsername" class="font-bold text-gray-800">User</h3>
                     <span id="displayRole" class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">Role</span>
                 </div>
-                <!-- LOGOUT BUTTON REMOVED -->
+                <!-- Logout button removed as requested -->
             </div>
 
             <!-- Input Form -->
@@ -237,7 +239,7 @@
 
     <script>
         // --- KONFIGURASI ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCc5mKEmKYknzC1iebvEQw-CNM04MSsr85gupkkJ1iMmRuzLz0Ro9C0MzfXpZ_8-Yr/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzX-2GMaisGa3vWWUfPkwbnShyYT4Nmi0JJk-OUiUw/dev"; 
         const URL_USER_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTAIpCKM-FLkgVPuNA9kEQWlUd_JTi-M1_43FC4mdV65-u83LWPMYkrtwtWBpDGB5Tds3ew9Yeq0H_W/pub?gid=0&single=true&output=csv";
         const URL_STUDENT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLbwyS_IlmifxxFbLRIgC3gvaMoJ-eZWDPhbPlPgb-eSttIvEovN0WzxzzTX1uv7fPgcwaIIhFl_v/pub?output=csv";
 
