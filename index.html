@@ -624,7 +624,13 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { position: 'top' } },
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 100, // Batas maksimum 100 orang
+                            ticks: { stepSize: 10 } // Jarak antar angka
+                        } 
+                    }
                 }
             });
         }
