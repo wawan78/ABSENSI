@@ -553,19 +553,29 @@
         }
 
         function processChartData(rows) {
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            // MODIFIKASI: Mengatur label tetap dari Senin s/d Minggu
+            const labels = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+            const dates = [];
             const dataMap = {}; 
-            const dates = [], labels = [];
 
-            for (let i=6; i>=0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
+            // Mencari Tanggal Senin minggu ini
+            const curr = new Date();
+            const day = curr.getDay(); 
+            // diff: jika Minggu(0) -> kurangi 6 hari, jika hari lain -> kurangi (hari - 1)
+            const diff = curr.getDate() - day + (day === 0 ? -6 : 1); 
+            const monday = new Date(curr.setDate(diff));
+
+            // Generate tanggal dari Senin sampai Minggu
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(monday);
+                d.setDate(monday.getDate() + i);
+                
                 const yyyy = d.getFullYear();
                 const mm = String(d.getMonth()+1).padStart(2,'0');
                 const dd = String(d.getDate()).padStart(2,'0');
                 const key = `${yyyy}-${mm}-${dd}`;
+                
                 dates.push(key);
-                labels.push(days[d.getDay()]);
                 dataMap[key] = { Hadir: 0, Sakit: 0, Izin: 0, Alpha: 0 };
             }
 
@@ -578,20 +588,17 @@
                 // Priority 2: Parse Timestamp col 0 (dd/MM/yyyy HH:mm:ss)
                 else if (r[0]) {
                     try {
-                        // Manual parse for dd/MM/yyyy
-                        // Example: "21/11/2024 14:30:00"
-                        const parts = r[0].split(' ')[0].split('/'); // ["21", "11", "2024"]
+                        const parts = r[0].split(' ')[0].split('/'); 
                         if(parts.length === 3) {
-                            // Reformat to YYYY-MM-DD
                             dateKey = `${parts[2]}-${parts[1]}-${parts[0]}`;
                         } else {
-                            // Fallback standard parse
                             let d = new Date(r[0]);
                             dateKey = d.toISOString().substring(0,10);
                         }
                     } catch(e){}
                 }
 
+                // Hanya hitung jika tanggal ada dalam range minggu ini
                 if (dataMap[dateKey]) {
                     const status = r[3];
                     if (dataMap[dateKey][status] !== undefined) dataMap[dateKey][status]++;
@@ -615,9 +622,39 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Hadir', data: h, borderColor: '#16a34a', backgroundColor: 'rgba(22, 163, 74, 0.2)', fill: true, tension: 0.4 },
-                        { label: 'Sakit', data: s, borderColor: '#eab308', backgroundColor: 'rgba(234, 179, 8, 0.2)', fill: true, tension: 0.4 },
-                        { label: 'Alpha', data: a, borderColor: '#dc2626', backgroundColor: 'rgba(220, 38, 38, 0.2)', fill: true, tension: 0.4 }
+                        { 
+                            label: 'Hadir', 
+                            data: h, 
+                            borderColor: '#16a34a', 
+                            backgroundColor: 'rgba(22, 163, 74, 0.2)', 
+                            fill: true, 
+                            tension: 0.4 
+                        },
+                        { 
+                            label: 'Sakit', 
+                            data: s, 
+                            borderColor: '#eab308', 
+                            backgroundColor: 'rgba(234, 179, 8, 0.2)', 
+                            fill: true, 
+                            tension: 0.4 
+                        },
+                        // MODIFIKASI: Menambahkan Dataset Izin (Biru)
+                        { 
+                            label: 'Izin', 
+                            data: i, 
+                            borderColor: '#3b82f6', // Biru Tailwind (blue-500)
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)', 
+                            fill: true, 
+                            tension: 0.4 
+                        },
+                        { 
+                            label: 'Alpha', 
+                            data: a, 
+                            borderColor: '#dc2626', 
+                            backgroundColor: 'rgba(220, 38, 38, 0.2)', 
+                            fill: true, 
+                            tension: 0.4 
+                        }
                     ]
                 },
                 options: {
@@ -627,8 +664,8 @@
                     scales: { 
                         y: { 
                             beginAtZero: true, 
-                            max: 100, // Batas maksimum 100 orang
-                            ticks: { stepSize: 10 } // Jarak antar angka
+                            max: 100, 
+                            ticks: { stepSize: 10 } 
                         } 
                     }
                 }
