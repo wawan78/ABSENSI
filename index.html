@@ -6,7 +6,6 @@
     <title>SIAKAD - Daarul 'Uluum Lido</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js untuk Diagram -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
@@ -15,90 +14,93 @@
         .bg-pesantren { background-color: #006838; }
         .text-pesantren { color: #006838; }
         
-        /* Sidebar Transitions */
         .sidebar { transition: transform 0.3s ease-in-out; }
-        .main-content { transition: margin-left 0.3s ease-in-out; }
-        
-        /* Loader */
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #006838;
-            border-radius: 50%;
-            width: 16px; height: 16px;
-            animation: spin 1s linear infinite;
-        }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #006838; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
+        .db-spinner { width: 30px; height: 30px; border: 4px solid #e5e7eb; border-top: 4px solid #16a34a; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Table Styles */
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th { background-color: #f8f9fa; text-align: left; padding: 10px; font-weight: 600; color: #4b5563; border-bottom: 2px solid #e5e7eb; }
         td { padding: 8px 10px; border-bottom: 1px solid #f3f4f6; color: #374151; }
         tr:hover { background-color: #f9fafb; }
+        
+        /* Custom Radio Button Style */
+        .status-radio:checked + label { font-weight: bold; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: scale(1.05); }
+        .status-radio[value="Sakit"]:checked + label { background-color: #eab308; border-color: #eab308; }
+        .status-radio[value="Izin"]:checked + label { background-color: #3b82f6; border-color: #3b82f6; }
+        .status-radio[value="Alpha"]:checked + label { background-color: #dc2626; border-color: #dc2626; }
+        
+        /* Animation for Popup */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-backdrop { animation: fadeIn 0.2s ease-out; }
+        .modal-content { animation: scaleUp 0.3s ease-out; }
     </style>
 </head>
 <body class="bg-gray-100 h-screen overflow-hidden flex">
 
-    <!-- SIDEBAR NAVIGATION (LEFT) -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="sidebar bg-white w-64 h-full shadow-xl fixed md:relative z-30 transform -translate-x-full md:translate-x-0 flex flex-col">
-        <!-- Logo Area -->
         <div class="p-6 border-b flex flex-col items-center text-center">
             <img src="https://assets-web-du.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2019/01/05054727/logodu.png" alt="Logo DU" class="h-16 mb-3">
             <h1 class="font-bold text-gray-800 leading-tight">Daarul 'Uluum<br>Lido</h1>
             <p class="text-xs text-gray-500 mt-1">Sistem Absensi Terpadu</p>
         </div>
-
-        <!-- Menu Items -->
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
             <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Menu Utama</p>
-            
             <button onclick="showPage('input')" id="navInput" class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg bg-green-50 text-green-700 transition-colors">
-                <i class="fas fa-edit w-6 text-center mr-2 text-lg"></i>
-                Input Absensi
+                <i class="fas fa-edit w-6 text-center mr-2 text-lg"></i> Input Absensi
             </button>
-            
             <button onclick="showPage('rekap')" id="navRekap" class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-                <i class="fas fa-chart-area w-6 text-center mr-2 text-lg"></i>
-                Rekapitulasi
+                <i class="fas fa-chart-area w-6 text-center mr-2 text-lg"></i> Rekapitulasi
             </button>
         </nav>
-
-        <!-- User Profile (Bottom Sidebar) -->
         <div class="p-4 border-t bg-gray-50">
             <div class="flex items-center">
-                <div class="bg-pesantren text-white rounded-full p-2 w-8 h-8 flex items-center justify-center text-xs font-bold mr-3">
-                    <i class="fas fa-user"></i>
-                </div>
+                <div class="bg-pesantren text-white rounded-full p-2 w-8 h-8 flex items-center justify-center text-xs font-bold mr-3"><i class="fas fa-user"></i></div>
                 <div class="flex-1 min-w-0">
                     <p id="sidebarUsername" class="text-sm font-medium text-gray-900 truncate">User</p>
                     <p id="sidebarRole" class="text-xs text-gray-500 truncate">Role</p>
                 </div>
-                <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-2" title="Keluar">
-                    <i class="fas fa-sign-out-alt text-lg"></i>
-                </button>
+                <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-2" title="Keluar"><i class="fas fa-sign-out-alt text-lg"></i></button>
             </div>
         </div>
     </aside>
 
-    <!-- OVERLAY FOR MOBILE -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
 
-    <!-- MAIN CONTENT -->
+    <!-- CUSTOM POPUP MODAL -->
+    <div id="statusModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50 modal-backdrop" onclick="closeModal()"></div>
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 relative z-10 modal-content transform transition-all">
+            <div class="text-center">
+                <div id="modalIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-green-100">
+                    <i class="fas fa-check text-3xl text-green-600"></i>
+                </div>
+                <h3 id="modalTitle" class="text-lg leading-6 font-bold text-gray-900">Berhasil!</h3>
+                <div class="mt-2">
+                    <p id="modalMessage" class="text-sm text-gray-500">Data absensi telah berhasil disimpan.</p>
+                </div>
+                <div class="mt-5">
+                    <button onclick="closeModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:text-sm transition-colors">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
     <div class="flex-1 flex flex-col h-full relative w-full">
-        
-        <!-- MOBILE HEADER -->
         <header class="bg-white shadow-sm z-10 flex items-center justify-between px-4 py-3 md:hidden">
-            <button onclick="toggleSidebar()" class="text-gray-500 focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
+            <button onclick="toggleSidebar()" class="text-gray-500 focus:outline-none"><i class="fas fa-bars text-xl"></i></button>
             <span class="font-bold text-pesantren">SIAKAD DU Lido</span>
-            <div class="w-6"></div> <!-- Spacer -->
+            <div class="w-6"></div>
         </header>
 
-        <!-- CONTENT SCROLLABLE AREA -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8">
             
-            <!-- LOGIN SCREEN (Overlay Fullscreen) -->
+            <!-- LOGIN -->
             <div id="loginSection" class="fixed inset-0 z-50 bg-gray-100 flex items-center justify-center p-4">
                 <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm border-t-4 border-green-700">
                     <div class="text-center mb-6">
@@ -106,569 +108,506 @@
                         <h2 class="text-xl font-bold text-gray-800">Login Petugas</h2>
                     </div>
                     <form id="loginForm" onsubmit="handleLogin(event)">
-                        <div class="mb-4">
-                            <input type="text" id="username" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="Username" required>
-                        </div>
-                        <div class="mb-6">
-                            <input type="password" id="password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="Password" required>
-                        </div>
+                        <div class="mb-4"><input type="text" id="username" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="Username" required></div>
+                        <div class="mb-6"><input type="password" id="password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="Password" required></div>
                         <button type="submit" class="w-full bg-pesantren text-white font-bold py-3 rounded-lg hover:bg-green-800 transition shadow-lg flex justify-center items-center gap-2">
                             <span>Masuk</span>
                             <div id="loginLoader" class="loader hidden border-white border-t-transparent"></div>
                         </button>
                         <p id="loginError" class="text-red-500 text-xs mt-3 text-center hidden"></p>
                     </form>
-                    <div class="mt-4 text-center text-xs text-gray-400" id="dbStatus">Connecting...</div>
+                    <div class="mt-6 pt-4 border-t border-gray-100 flex justify-center items-center h-12">
+                        <div id="dbStatus" class="flex items-center justify-center transition-all duration-300"><div class="db-spinner"></div></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- PAGE: INPUT ABSENSI -->
-            <div id="pageInput" class="max-w-3xl mx-auto hidden">
+            <!-- INPUT PAGE -->
+            <div id="pageInput" class="max-w-5xl mx-auto hidden">
                 <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
                     <div class="bg-gradient-to-r from-green-700 to-green-600 px-6 py-4 flex justify-between items-center text-white">
-                        <h2 class="font-bold text-lg"><i class="fas fa-edit mr-2"></i> Form Input Absensi</h2>
-                        <span id="activeCategoryBadge" class="bg-white text-green-700 text-xs font-bold px-2 py-1 rounded">Pilih Kategori</span>
-                    </div>
-
-                    <!-- Category Selector -->
-                    <div class="p-4 border-b bg-gray-50">
-                        <div id="categoryGrid" class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs text-center">
-                            <!-- Generated by JS -->
-                        </div>
-                    </div>
-
-                    <!-- Form -->
-                    <div id="formContainer" class="p-6 hidden">
-                        <form id="attendanceForm" onsubmit="submitAttendance(event)">
-                            <input type="hidden" id="absensiType">
-                            
-                            <!-- Search Box -->
-                            <div class="mb-4 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                                <label class="block text-blue-800 text-sm font-bold mb-2">Cari Santri (ID/NIS)</label>
-                                <div class="relative">
-                                    <input type="text" id="studentId" class="w-full pl-3 pr-10 py-2 border border-blue-300 rounded focus:outline-none focus:border-blue-500 font-mono" placeholder="Ketik ID lalu ENTER..." autocomplete="off">
-                                    <div class="absolute right-3 top-3 text-blue-400">
-                                        <i class="fas fa-search"></i>
-                                    </div>
-                                    <div id="searchLoader" class="absolute right-10 top-3 loader hidden"></div>
-                                </div>
-                                <div id="searchResultBox" class="mt-2 hidden text-sm bg-white p-3 rounded border"></div>
-                            </div>
-
-                            <input type="hidden" id="finalStudentName">
-                            <input type="hidden" id="finalStudentId">
-
-                            <!-- Status Radio -->
-                            <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Status</label>
-                                <div class="grid grid-cols-4 gap-2">
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="status" value="Hadir" class="peer sr-only" checked>
-                                        <div class="py-2 text-center border rounded peer-checked:bg-green-600 peer-checked:text-white text-sm">Hadir</div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="status" value="Sakit" class="peer sr-only">
-                                        <div class="py-2 text-center border rounded peer-checked:bg-yellow-500 peer-checked:text-white text-sm">Sakit</div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="status" value="Izin" class="peer sr-only">
-                                        <div class="py-2 text-center border rounded peer-checked:bg-blue-500 peer-checked:text-white text-sm">Izin</div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="status" value="Alpha" class="peer sr-only">
-                                        <div class="py-2 text-center border rounded peer-checked:bg-red-600 peer-checked:text-white text-sm">Alpha</div>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <button type="submit" id="btnKirim" class="w-full bg-green-700 text-white font-bold py-3 rounded-lg hover:bg-green-800 transition shadow-lg flex justify-center items-center gap-2 disabled:opacity-50">
-                                <i class="fas fa-paper-plane"></i> Kirim Data
-                            </button>
-                        </form>
+                        <h2 class="font-bold text-lg"><i class="fas fa-edit mr-2"></i> Input Absensi Massal</h2>
+                        <span id="activeCategoryBadge" class="bg-white text-green-700 text-xs font-bold px-2 py-1 rounded">Pilih Menu</span>
                     </div>
                     
-                    <div id="selectPrompt" class="p-10 text-center text-gray-400">
-                        <i class="fas fa-hand-pointer text-3xl mb-2"></i>
-                        <p>Pilih kategori di atas untuk memulai.</p>
+                    <!-- Menu Selector -->
+                    <div class="p-4 border-b bg-gray-50">
+                        <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-center"></div>
                     </div>
+
+                    <!-- Form Area -->
+                    <div id="formContainer" class="p-6 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <!-- Group Selector -->
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" id="groupLabel">Pilih Kamar/Kelas</label>
+                                <select id="groupSelect" onchange="loadGroupStudents()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500 bg-white">
+                                    <option value="">-- Pilih --</option>
+                                </select>
+                            </div>
+                            <!-- Agenda Input -->
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Agenda / Keterangan</label>
+                                <input type="text" id="agendaInput" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-green-500" placeholder="Contoh: Sholat Subuh / Materi Fiqih">
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="absensiType">
+
+                        <!-- Student List Table -->
+                        <div id="studentListContainer" class="hidden">
+                            <div class="flex justify-between items-end mb-2">
+                                <h3 class="font-bold text-gray-700">Daftar Santri</h3>
+                                <div class="text-xs text-gray-500">Total: <span id="studentCount">0</span></div>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-4 text-xs text-blue-800">
+                                <i class="fas fa-info-circle mr-1"></i> <b>Petunjuk:</b> Status default adalah <b>Hadir</b>. Klik S/I/A jika santri tidak hadir. Klik tombol <b>X</b> untuk mereset ke Hadir.
+                            </div>
+
+                            <div class="table-container border rounded-lg max-h-[500px] overflow-y-auto">
+                                <table class="w-full">
+                                    <thead class="sticky top-0 z-10">
+                                        <tr>
+                                            <th class="w-10 text-center">No</th>
+                                            <th>Nama Santri</th>
+                                            <th class="hidden sm:table-cell">Info</th>
+                                            <th class="text-center w-40">Keterangan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody">
+                                        <!-- Rows Generated Here -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <button onclick="submitBulkAttendance()" id="btnKirim" class="mt-6 w-full bg-green-700 text-white font-bold py-3 rounded-lg hover:bg-green-800 transition shadow-lg flex justify-center items-center gap-2">
+                                <i class="fas fa-paper-plane"></i> Kirim Data Absensi
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="selectPrompt" class="p-10 text-center text-gray-400"><i class="fas fa-hand-pointer text-3xl mb-2"></i><p>Pilih menu di atas.</p></div>
                 </div>
             </div>
 
-            <!-- PAGE: REKAPITULASI (Chart & Table) -->
+            <!-- REKAP PAGE -->
             <div id="pageRekap" class="max-w-5xl mx-auto hidden">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Dashboard Rekapitulasi</h2>
-                
-                <!-- Chart Section -->
                 <div class="bg-white p-4 rounded-xl shadow-md mb-6">
-                    <h3 class="text-sm font-bold text-gray-600 mb-4 border-l-4 border-green-600 pl-2">Grafik Absensi Harian (7 Hari Terakhir)</h3>
-                    <div class="h-64 w-full relative">
-                        <canvas id="attendanceChart"></canvas>
-                    </div>
+                    <h3 class="text-sm font-bold text-gray-600 mb-4 border-l-4 border-green-600 pl-2">Grafik Absensi (Minggu Ini)</h3>
+                    <div class="h-64 w-full relative"><canvas id="attendanceChart"></canvas></div>
                 </div>
-
-                <!-- Table Section -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
                     <div class="p-4 border-b flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-50">
                         <h3 class="font-bold text-gray-700"><i class="fas fa-table mr-2"></i>Data Detail</h3>
                         <select id="rekapSourceSelect" onchange="loadRecapData()" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-green-500">
                             <option value="harian">Absensi Harian (Kamar)</option>
-                            <option value="muhadatsah">Muhadatsah</option>
                             <option value="muhadhoroh">Muhadhoroh</option>
                             <option value="halaqoh">Halaqoh Qur'an</option>
                             <option value="pramuka">Pramuka</option>
                         </select>
                     </div>
-                    
                     <div class="table-container relative min-h-[200px]">
-                        <div id="rekapLoader" class="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-10 hidden">
-                            <div class="loader border-gray-300 border-t-green-600 mb-2"></div>
-                            <span class="text-xs text-gray-500">Mengambil data dari Spreadsheet...</span>
-                        </div>
+                        <div id="rekapLoader" class="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-10 hidden"><div class="loader border-gray-300 border-t-green-600 mb-2"></div><span class="text-xs text-gray-500">Memuat data...</span></div>
                         <table class="w-full text-left">
-                            <thead>
-                                <tr>
-                                    <th class="w-12">No</th>
-                                    <th>Waktu</th>
-                                    <th>ID Santri</th>
-                                    <th>Nama</th>
-                                    <th>Status</th>
-                                    <th>Pelapor</th>
-                                </tr>
-                            </thead>
-                            <tbody id="rekapTableBody">
-                                <tr><td colspan="6" class="text-center py-8 text-gray-400">Silakan pilih data untuk ditampilkan.</td></tr>
-                            </tbody>
+                            <thead><tr><th class="w-12">No</th><th>Waktu</th><th>Nama</th><th>Agenda</th><th>Status</th><th>Pelapor</th></tr></thead>
+                            <tbody id="rekapTableBody"><tr><td colspan="6" class="text-center py-8 text-gray-400">Pilih data.</td></tr></tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 
     <script>
-        // --- CONFIG ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqpo7FUK9x686jZHfMkkTd20SYo28-5XOUt6ZcWj9zDS5yt2eBdvyhBmM-5pcsHbo-/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8B_DzAZc31AKqBzw_ZdFSKyPN1iTLRyJQlV_KYwCq0je6YCoClBwrMXWFSlpcoXU6/exec"; 
         const URL_USER_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTAIpCKM-FLkgVPuNA9kEQWlUd_JTi-M1_43FC4mdV65-u83LWPMYkrtwtWBpDGB5Tds3ew9Yeq0H_W/pub?gid=0&single=true&output=csv";
-        const URL_STUDENT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLbwyS_IlmifxxFbLRIgC3gvaMoJ-eZWDPhbPlPgb-eSttIvEovN0WzxzzTX1uv7fPgcwaIIhFl_v/pub?output=csv";
+        
+        let usersData = [], studentsDataRaw = [], currentUser = null, chartInstance = null;
+        let listKamar = new Set(), listKelas = new Set();
 
-        let usersData = [], studentsDataRaw = [], currentUser = null;
-        let attendanceChartInstance = null;
-
-        // --- INIT ---
         window.onload = async () => {
             const dbStatus = document.getElementById('dbStatus');
             try {
-                const [uRes, sRes] = await Promise.all([
-                    fetch(URL_USER_CSV).then(r => r.text()),
-                    fetch(URL_STUDENT_CSV).then(r => r.text())
-                ]);
+                const uRes = await fetch(URL_USER_CSV);
+                const uText = await uRes.text();
+                usersData = parseCSV(uText);
+
+                const sRes = await fetch(SCRIPT_URL + '?action=getStudents');
+                const sJson = await sRes.json();
                 
-                usersData = parseCSV(uRes, true);
-                studentsDataRaw = parseCSV(sRes, false);
-                
-                dbStatus.innerHTML = `<span class="text-green-600 font-bold">Database Siap.</span>`;
+                if(sJson.result === 'success') {
+                    studentsDataRaw = sJson.data;
+                    processGroups();
+                    dbStatus.innerHTML = `<i class="fas fa-check-circle text-4xl text-green-500 animate-bounce"></i>`;
+                } else {
+                    throw new Error("Gagal ambil data santri");
+                }
             } catch (e) {
-                dbStatus.innerHTML = `<span class="text-red-500">Gagal Koneksi Data.</span>`;
+                console.error(e);
+                dbStatus.innerHTML = `<i class="fas fa-times-circle text-3xl text-red-500"></i>`;
             }
         };
 
-        function parseCSV(text, isObj) {
-            const rows = [];
+        function parseCSV(text) {
             const lines = text.trim().split('\n');
-            if (lines.length < 1) return [];
-
-            if (isObj) {
-                const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
-                for(let i=1; i<lines.length; i++) {
-                    const row = parseLine(lines[i]);
-                    if(row.length < headers.length) continue;
-                    let obj = {};
-                    headers.forEach((h, idx) => obj[h] = row[idx]);
-                    rows.push(obj);
-                }
-            } else {
-                for(let i=1; i<lines.length; i++) rows.push(parseLine(lines[i]));
-            }
-            return rows;
-        }
-
-        function parseLine(line) {
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
             const res = [];
-            let inQuote = false, val = '';
-            for (let c of line) {
-                if (c === '"') { inQuote = !inQuote; }
-                else if (c === ',' && !inQuote) { res.push(val.trim()); val = ''; }
-                else { val += c; }
+            for(let i=1; i<lines.length; i++) {
+                const row = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+                let obj = {};
+                headers.forEach((h, idx) => obj[h] = row[idx]);
+                res.push(obj);
             }
-            res.push(val.trim());
             return res;
         }
 
-        // --- AUTH ---
+        function processGroups() {
+            studentsDataRaw.forEach(row => {
+                if(row[3]) listKelas.add(row[3]);
+                if(row[4]) listKamar.add(row[4]);
+            });
+        }
+
+        // POPUP LOGIC
+        function showModal(type, title, message) {
+            const modal = document.getElementById('statusModal');
+            const iconDiv = document.getElementById('modalIcon');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            
+            modal.classList.remove('hidden');
+            
+            if(type === 'success') {
+                iconDiv.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 bg-green-100";
+                iconDiv.innerHTML = '<i class="fas fa-check text-2xl text-green-600"></i>';
+                titleEl.className = "text-lg leading-6 font-bold text-gray-900";
+            } else {
+                iconDiv.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 bg-red-100";
+                iconDiv.innerHTML = '<i class="fas fa-times text-2xl text-red-600"></i>';
+                titleEl.className = "text-lg leading-6 font-bold text-red-600";
+            }
+            
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+        }
+
+        function closeModal() {
+            document.getElementById('statusModal').classList.add('hidden');
+        }
+
+        // AUTH
         function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('username').value.trim();
-            const p = document.getElementById('password').value.trim();
-            const loader = document.getElementById('loginLoader');
-            const err = document.getElementById('loginError');
-
-            loader.classList.remove('hidden');
-            err.classList.add('hidden');
-
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            document.getElementById('loginLoader').classList.remove('hidden');
             setTimeout(() => {
                 const user = usersData.find(x => x.username === u && x.password === p);
-                if (user) {
+                if(user) {
                     currentUser = user;
                     document.getElementById('loginSection').classList.add('hidden');
                     document.getElementById('pageInput').classList.remove('hidden');
-                    
                     document.getElementById('sidebarUsername').innerText = user.username;
                     document.getElementById('sidebarRole').innerText = user.role;
-                    
-                    generateCategoryButtons(user.role);
+                    generateMenu(user.role);
                 } else {
-                    err.innerText = "Username/Password Salah!";
-                    err.classList.remove('hidden');
+                    document.getElementById('loginError').innerText = "Login Gagal!";
+                    document.getElementById('loginError').classList.remove('hidden');
                 }
-                loader.classList.add('hidden');
+                document.getElementById('loginLoader').classList.add('hidden');
             }, 500);
         }
 
-        // --- FIX LOGOUT MANUAL ---
-        function logout() {
-            if(confirm("Yakin ingin keluar?")) {
-                // Reset State
-                currentUser = null;
+        function logout() { if(confirm("Keluar?")) location.reload(); }
+
+        // INPUT LOGIC
+        function generateMenu(role) {
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = '';
+            const menus = [
+                { id: 'harian', label: 'Kamar', icon: 'fa-bed', roles: ['admin', 'keamanan'], groupBy: 'kamar' },
+                { id: 'muhadhoroh', label: 'Muhadhoroh', icon: 'fa-microphone', roles: ['admin', 'bahasa'], groupBy: 'kelas' },
+                { id: 'halaqoh', label: 'Halaqoh', icon: 'fa-quran', roles: ['admin', 'peribadatan'], groupBy: 'kelas' },
+                { id: 'pramuka', label: 'Pramuka', icon: 'fa-campground', roles: ['admin', 'kordinator'], groupBy: 'kelas' }
+            ];
+            menus.forEach(m => {
+                if(m.roles.includes(role.toLowerCase())) {
+                    const btn = document.createElement('button');
+                    btn.className = "flex flex-col items-center p-2 rounded border hover:bg-green-50";
+                    btn.onclick = () => setupInputForm(m);
+                    btn.innerHTML = `<i class="fas ${m.icon} text-green-600 text-xl mb-1"></i><span>${m.label}</span>`;
+                    grid.appendChild(btn);
+                }
+            });
+        }
+
+        function setupInputForm(menu) {
+            document.getElementById('selectPrompt').classList.add('hidden');
+            document.getElementById('formContainer').classList.remove('hidden');
+            document.getElementById('activeCategoryBadge').innerText = menu.label;
+            document.getElementById('absensiType').value = menu.id;
+            document.getElementById('studentListContainer').classList.add('hidden');
+            
+            const select = document.getElementById('groupSelect');
+            select.innerHTML = '<option value="">-- Pilih --</option>';
+            const label = document.getElementById('groupLabel');
+            
+            let sourceSet = (menu.groupBy === 'kamar') ? listKamar : listKelas;
+            label.innerText = (menu.groupBy === 'kamar') ? "Pilih Kamar" : "Pilih Kelas";
+            
+            Array.from(sourceSet).sort().forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.innerText = item;
+                select.appendChild(opt);
+            });
+            select.dataset.filterMode = (menu.groupBy === 'kamar') ? 4 : 3; 
+        }
+
+        function loadGroupStudents() {
+            const select = document.getElementById('groupSelect');
+            const filterVal = select.value;
+            const filterIdx = parseInt(select.dataset.filterMode);
+            const tbody = document.getElementById('studentTableBody');
+            const container = document.getElementById('studentListContainer');
+            
+            if (!filterVal) { container.classList.add('hidden'); return; }
+
+            const filtered = studentsDataRaw.filter(row => row[filterIdx] == filterVal);
+            document.getElementById('studentCount').innerText = filtered.length;
+            
+            tbody.innerHTML = '';
+            filtered.forEach((s, i) => {
+                // Row without Hadir button, only S, I, A and Reset
+                const html = `
+                    <tr class="hover:bg-gray-50 border-b" data-id="${s[0]}" data-nama="${s[1]}">
+                        <td class="text-center p-2">${i+1}</td>
+                        <td class="p-2 font-medium">
+                            ${s[1]}
+                            <div class="text-[10px] text-gray-400 sm:hidden">${s[0]} | ${s[5]}</div>
+                        </td>
+                        <td class="p-2 text-xs text-gray-500 hidden sm:table-cell">
+                            ID: ${s[0]}<br>Asal: ${s[5]}
+                        </td>
+                        <td class="p-2 text-center">
+                            <div class="flex justify-center items-center space-x-1">
+                                <div class="inline-block">
+                                    <input type="radio" name="status-${i}" id="s-${i}" value="Sakit" class="status-radio hidden">
+                                    <label for="s-${i}" class="cursor-pointer px-3 py-1 rounded-md border text-xs font-bold text-yellow-700 border-yellow-200 hover:bg-yellow-50 transition">S</label>
+                                </div>
+                                <div class="inline-block">
+                                    <input type="radio" name="status-${i}" id="i-${i}" value="Izin" class="status-radio hidden">
+                                    <label for="i-${i}" class="cursor-pointer px-3 py-1 rounded-md border text-xs font-bold text-blue-700 border-blue-200 hover:bg-blue-50 transition">I</label>
+                                </div>
+                                <div class="inline-block">
+                                    <input type="radio" name="status-${i}" id="a-${i}" value="Alpha" class="status-radio hidden">
+                                    <label for="a-${i}" class="cursor-pointer px-3 py-1 rounded-md border text-xs font-bold text-red-700 border-red-200 hover:bg-red-50 transition">A</label>
+                                </div>
+                                <!-- Reset Button -->
+                                <button type="button" onclick="resetRow(${i})" class="ml-2 text-gray-400 hover:text-gray-600 focus:outline-none" title="Reset ke Hadir">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', html);
+            });
+            
+            container.classList.remove('hidden');
+        }
+
+        // Helper to clear radio selection for a row
+        window.resetRow = function(index) {
+            const radios = document.getElementsByName(`status-${index}`);
+            radios.forEach(r => r.checked = false);
+        };
+
+        async function submitBulkAttendance() {
+            const btn = document.getElementById('btnKirim');
+            const agenda = document.getElementById('agendaInput').value;
+            
+            if(!agenda) { showModal('error', 'Gagal', "Mohon isi Agenda Kegiatan terlebih dahulu."); return; }
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
+
+            const tbody = document.getElementById('studentTableBody');
+            const rows = tbody.querySelectorAll('tr');
+            const entries = [];
+
+            rows.forEach(tr => {
+                const id = tr.dataset.id;
+                const nama = tr.dataset.nama;
+                const statusInput = tr.querySelector('input[type="radio"]:checked');
+                // Jika tidak ada yang dicek, statusnya null (Hadir implisit)
+                const status = statusInput ? statusInput.value : null;
                 
-                // Reset UI Views
-                document.getElementById('pageInput').classList.add('hidden');
-                document.getElementById('pageRekap').classList.add('hidden');
-                document.getElementById('sidebar').classList.add('-translate-x-full');
-                document.getElementById('loginSection').classList.remove('hidden');
+                // HANYA KIRIM JIKA ADA STATUS (S/I/A)
+                if (status) {
+                    entries.push({ id: id, nama: nama, status: status });
+                }
+            });
+
+            if (entries.length === 0) {
+                showModal('success', 'Informasi', "Semua santri tercatat HADIR. Tidak ada data Sakit/Izin/Alpha yang disimpan.");
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Data Absensi`;
+                return;
+            }
+
+            const payload = {
+                tipe: document.getElementById('absensiType').value,
+                agenda: agenda,
+                pelapor: currentUser.username,
+                entries: entries
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST', 
+                    mode: 'no-cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                showModal('success', 'Berhasil', `Berhasil menyimpan ${entries.length} data ketidakhadiran.`);
                 
-                // Reset Form Login
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
+                document.getElementById('groupSelect').value = "";
+                document.getElementById('studentListContainer').classList.add('hidden');
+                document.getElementById('agendaInput').value = "";
+                
+            } catch(e) { 
+                showModal('error', 'Gagal', "Terjadi kesalahan koneksi server."); 
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Data Absensi`;
             }
         }
 
-        // --- NAVIGATION ---
+        // NAVIGATION & CHARTS
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
         }
 
-        function showPage(page) {
-            document.getElementById('navInput').className = "w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 transition-colors";
-            document.getElementById('navRekap').className = "w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 transition-colors";
-            
+        function showPage(p) {
             document.getElementById('pageInput').classList.add('hidden');
             document.getElementById('pageRekap').classList.add('hidden');
+            document.getElementById('navInput').classList.replace('bg-green-50', 'text-gray-600');
+            document.getElementById('navRekap').classList.replace('bg-green-50', 'text-gray-600');
 
-            if (page === 'input') {
+            if(p === 'input') {
                 document.getElementById('pageInput').classList.remove('hidden');
-                document.getElementById('navInput').className = "w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg bg-green-50 text-green-700 transition-colors";
             } else {
                 document.getElementById('pageRekap').classList.remove('hidden');
-                document.getElementById('navRekap').className = "w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg bg-green-50 text-green-700 transition-colors";
-                loadChartData(); 
                 loadRecapData();
+                loadChartData();
             }
-            
             if(window.innerWidth < 768) {
                 document.getElementById('sidebar').classList.add('-translate-x-full');
                 document.getElementById('sidebarOverlay').classList.add('hidden');
             }
         }
 
-        // --- INPUT FEATURE ---
-        function generateCategoryButtons(role) {
-            const container = document.getElementById('categoryGrid');
-            container.innerHTML = '';
-            
-            const menus = [
-                { id: 'harian', label: 'Kamar', icon: 'fa-bed', roles: ['admin', 'keamanan'] },
-                { id: 'muhadhoroh', label: 'Muhadhoroh', icon: 'fa-microphone', roles: ['admin', 'bahasa'] },
-                { id: 'muhadatsah', label: 'Muhadatsah', icon: 'fa-comments', roles: ['admin', 'bahasa'] },
-                { id: 'halaqoh', label: 'Halaqoh', icon: 'fa-quran', roles: ['admin', 'peribadatan'] },
-                { id: 'pramuka', label: 'Pramuka', icon: 'fa-campground', roles: ['admin', 'kordinator'] },
-            ];
-
-            menus.forEach(m => {
-                if (m.roles.includes(role.toLowerCase())) {
-                    const btn = document.createElement('button');
-                    btn.className = "flex flex-col items-center p-2 rounded border border-gray-200 hover:bg-green-50 transition";
-                    btn.onclick = () => selectCategory(m);
-                    btn.innerHTML = `<i class="fas ${m.icon} text-xl text-green-600 mb-1"></i><span>${m.label}</span>`;
-                    container.appendChild(btn);
-                }
-            });
-        }
-
-        function selectCategory(menu) {
-            document.getElementById('selectPrompt').classList.add('hidden');
-            document.getElementById('formContainer').classList.remove('hidden');
-            document.getElementById('activeCategoryBadge').innerText = menu.label;
-            document.getElementById('absensiType').value = menu.id;
-            document.getElementById('studentId').value = '';
-            document.getElementById('searchResultBox').classList.add('hidden');
-            document.getElementById('studentId').focus();
-        }
-
-        const studentIdInput = document.getElementById('studentId');
-        studentIdInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); searchStudent(); }
-        });
-
-        function searchStudent() {
-            const query = studentIdInput.value.trim().toLowerCase();
-            const loader = document.getElementById('searchLoader');
-            const resultBox = document.getElementById('searchResultBox');
-            const btn = document.getElementById('btnKirim');
-            
-            if(!query || studentsDataRaw.length === 0) return;
-
-            loader.classList.remove('hidden');
-            resultBox.classList.add('hidden');
-            btn.disabled = true;
-
-            setTimeout(() => {
-                const found = studentsDataRaw.find(r => r[0] && r[0].toLowerCase() === query);
-                
-                loader.classList.add('hidden');
-                resultBox.classList.remove('hidden');
-                
-                if (found) {
-                    const [id, nama, jk, kelas, kamar, asal] = found;
-                    resultBox.innerHTML = `
-                        <div class="font-bold text-green-700 mb-1">${nama || 'Tanpa Nama'}</div>
-                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-600 text-xs">
-                            <div>ID: <span class="font-medium">${id}</span></div>
-                            <div>JK: <span class="font-medium">${jk}</span></div>
-                            <div>Kelas: <span class="font-medium">${kelas}</span></div>
-                            <div>Kamar: <span class="font-medium">${kamar}</span></div>
-                            <div class="col-span-2">Asal: <span class="font-medium">${asal}</span></div>
-                        </div>
-                    `;
-                    document.getElementById('finalStudentName').value = nama;
-                    document.getElementById('finalStudentId').value = id;
-                    btn.disabled = false;
-                } else {
-                    resultBox.innerHTML = `<span class="text-red-500">Data tidak ditemukan.</span>`;
-                    document.getElementById('finalStudentName').value = "";
-                }
-            }, 300);
-        }
-
-        async function submitAttendance(e) {
-            e.preventDefault();
-            if (SCRIPT_URL.includes("MASUKKAN")) { alert("Setup Script URL dulu!"); return; }
-
-            const btn = document.getElementById('btnKirim');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "Mengirim...";
-            btn.disabled = true;
-
-            const payload = {
-                tipe: document.getElementById('absensiType').value,
-                idSantri: document.getElementById('finalStudentId').value,
-                namaSantri: document.getElementById('finalStudentName').value,
-                status: document.querySelector('input[name="status"]:checked').value,
-                pelapor: currentUser.username
-            };
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                alert("Data Berhasil Disimpan!");
-                document.getElementById('studentId').value = '';
-                document.getElementById('searchResultBox').classList.add('hidden');
-                document.getElementById('studentId').focus();
-            } catch (err) {
-                alert("Gagal kirim data.");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = true;
-            }
-        }
-
-        // --- RECAP & CHART ---
         async function loadRecapData() {
             const type = document.getElementById('rekapSourceSelect').value;
             const tbody = document.getElementById('rekapTableBody');
             const loader = document.getElementById('rekapLoader');
-            
-            tbody.innerHTML = '';
-            loader.classList.remove('hidden');
+            tbody.innerHTML = ''; loader.classList.remove('hidden');
             
             try {
-                const url = `${SCRIPT_URL}?action=getRecap&tipe=${type}`;
-                const response = await fetch(url);
-                const json = await response.json();
-                
+                const res = await fetch(`${SCRIPT_URL}?action=getRecap&tipe=${type}`);
+                const json = await res.json();
                 loader.classList.add('hidden');
                 
-                if (json.result === 'success' && json.data) {
-                    const rows = json.data.reverse(); 
+                if(json.result === 'success') {
                     let html = '';
-                    rows.forEach((row, index) => {
-                        let timeStr = row[0];
-                        try { timeStr = new Date(row[0]).toLocaleString('id-ID'); } catch(e){}
-
+                    json.data.reverse().forEach((r, i) => {
+                        let t = r[0];
+                        try { t = new Date(r[0]).toLocaleString('id-ID'); } catch(x){}
                         html += `
                             <tr class="border-b border-gray-100">
-                                <td>${index + 1}</td>
-                                <td>${timeStr}</td>
-                                <td>${row[1]}</td>
-                                <td class="font-medium">${row[2]}</td>
-                                <td><span class="px-2 py-0.5 rounded text-xs font-bold bg-gray-100">${row[3]}</span></td>
-                                <td class="text-gray-500 text-xs">${row[4]}</td>
-                            </tr>
-                        `;
+                                <td>${i+1}</td>
+                                <td class="text-xs text-gray-500">${t}</td>
+                                <td class="font-medium">${r[2]}</td>
+                                <td class="text-xs">${r[3]}</td>
+                                <td><span class="px-2 py-0.5 rounded text-xs font-bold ${r[4]==='Hadir'?'bg-green-100':r[4]==='Sakit'?'bg-yellow-100':r[4]==='Izin'?'bg-blue-100':'bg-red-100'}">${r[4]}</span></td>
+                                <td class="text-xs text-gray-500">${r[5]}</td>
+                            </tr>`;
                     });
-                    tbody.innerHTML = html || '<tr><td colspan="6" class="text-center p-4">Belum ada data.</td></tr>';
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">Gagal mengambil data.</td></tr>';
+                    tbody.innerHTML = html || '<tr><td colspan="6" class="text-center p-4">Kosong.</td></tr>';
                 }
-            } catch (e) {
-                loader.classList.add('hidden');
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">Error Koneksi Server.</td></tr>';
-            }
+            } catch(e) { loader.classList.add('hidden'); }
         }
 
         async function loadChartData() {
             try {
-                const url = `${SCRIPT_URL}?action=getRecap&tipe=harian`;
-                const response = await fetch(url);
-                const json = await response.json();
-                if (json.result === 'success') processChartData(json.data);
-            } catch (e) { console.error("Chart Error", e); }
+                const res = await fetch(`${SCRIPT_URL}?action=getRecap&tipe=harian`);
+                const json = await res.json();
+                if(json.result === 'success') updateChart(json.data);
+            } catch(e){}
         }
 
-        function processChartData(rows) {
-            // MODIFIKASI: Mengatur label tetap dari Senin s/d Minggu
-            const labels = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            const dates = [];
-            const dataMap = {}; 
-
-            // Mencari Tanggal Senin minggu ini
+        function updateChart(rows) {
+            // --- FIX DATE LOGIC ---
             const curr = new Date();
             const day = curr.getDay(); 
-            // diff: jika Minggu(0) -> kurangi 6 hari, jika hari lain -> kurangi (hari - 1)
+            // Monday of current week
             const diff = curr.getDate() - day + (day === 0 ? -6 : 1); 
             const monday = new Date(curr.setDate(diff));
 
-            // Generate tanggal dari Senin sampai Minggu
-            for (let i = 0; i < 7; i++) {
-                const d = new Date(monday);
-                d.setDate(monday.getDate() + i);
-                
-                const yyyy = d.getFullYear();
-                const mm = String(d.getMonth()+1).padStart(2,'0');
-                const dd = String(d.getDate()).padStart(2,'0');
-                const key = `${yyyy}-${mm}-${dd}`;
-                
-                dates.push(key);
-                dataMap[key] = { Hadir: 0, Sakit: 0, Izin: 0, Alpha: 0 };
+            const labels = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+            const dataMap = {}; const keys = [];
+
+            for(let i=0; i<7; i++) {
+                let temp = new Date(monday);
+                temp.setDate(monday.getDate()+i);
+                // Force format YYYY-MM-DD local time to avoid UTC shift issues
+                const y = temp.getFullYear();
+                const m = String(temp.getMonth()+1).padStart(2, '0');
+                const d = String(temp.getDate()).padStart(2, '0');
+                const k = `${y}-${m}-${d}`;
+                keys.push(k);
+                dataMap[k] = {H:0, S:0, I:0, A:0};
             }
 
             rows.forEach(r => {
                 let dateKey = "";
-                // Priority 1: Helper column 5 (YYYY-MM-DD) from new backend
-                if (r[5]) {
-                    dateKey = r[5].substring(0, 10);
-                } 
-                // Priority 2: Parse Timestamp col 0 (dd/MM/yyyy HH:mm:ss)
-                else if (r[0]) {
-                    try {
-                        const parts = r[0].split(' ')[0].split('/'); 
-                        if(parts.length === 3) {
-                            dateKey = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                        } else {
-                            let d = new Date(r[0]);
-                            dateKey = d.toISOString().substring(0,10);
-                        }
-                    } catch(e){}
+                // r[6] is DateClean (YYYY-MM-DD) from backend
+                if(r[6]) dateKey = r[6].substring(0,10);
+                else if(r[0]) { 
+                    try { 
+                       let parts = r[0].split(' ')[0].split('/'); 
+                       if(parts.length===3) dateKey = `${parts[2]}-${parts[1]}-${parts[0]}`; 
+                    } catch(x){} 
                 }
-
-                // Hanya hitung jika tanggal ada dalam range minggu ini
-                if (dataMap[dateKey]) {
-                    const status = r[3];
-                    if (dataMap[dateKey][status] !== undefined) dataMap[dateKey][status]++;
+                
+                if(dataMap[dateKey]) {
+                    const s = r[4];
+                    if(s==='Hadir') dataMap[dateKey].H++;
+                    else if(s==='Sakit') dataMap[dateKey].S++;
+                    else if(s==='Izin') dataMap[dateKey].I++;
+                    else if(s==='Alpha') dataMap[dateKey].A++;
                 }
             });
 
-            const dsHadir = dates.map(d => dataMap[d].Hadir);
-            const dsSakit = dates.map(d => dataMap[d].Sakit);
-            const dsIzin = dates.map(d => dataMap[d].Izin);
-            const dsAlpha = dates.map(d => dataMap[d].Alpha);
-
-            renderChart(labels, dsHadir, dsSakit, dsIzin, dsAlpha);
-        }
-
-        function renderChart(labels, h, s, i, a) {
+            if(chartInstance) chartInstance.destroy();
             const ctx = document.getElementById('attendanceChart').getContext('2d');
-            if (attendanceChartInstance) attendanceChartInstance.destroy();
-
-            attendanceChartInstance = new Chart(ctx, {
+            chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
-                        { 
-                            label: 'Hadir', 
-                            data: h, 
-                            borderColor: '#16a34a', 
-                            backgroundColor: 'rgba(22, 163, 74, 0.2)', 
-                            fill: true, 
-                            tension: 0.4 
-                        },
-                        { 
-                            label: 'Sakit', 
-                            data: s, 
-                            borderColor: '#eab308', 
-                            backgroundColor: 'rgba(234, 179, 8, 0.2)', 
-                            fill: true, 
-                            tension: 0.4 
-                        },
-                        // MODIFIKASI: Menambahkan Dataset Izin (Biru)
-                        { 
-                            label: 'Izin', 
-                            data: i, 
-                            borderColor: '#3b82f6', // Biru Tailwind (blue-500)
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)', 
-                            fill: true, 
-                            tension: 0.4 
-                        },
-                        { 
-                            label: 'Alpha', 
-                            data: a, 
-                            borderColor: '#dc2626', 
-                            backgroundColor: 'rgba(220, 38, 38, 0.2)', 
-                            fill: true, 
-                            tension: 0.4 
-                        }
+                        { label: 'Hadir', data: keys.map(k=>dataMap[k].H), borderColor: '#16a34a', fill: true, backgroundColor: 'rgba(22,163,74,0.2)', tension: 0.4 },
+                        { label: 'Sakit', data: keys.map(k=>dataMap[k].S), borderColor: '#eab308', fill: true, backgroundColor: 'rgba(234,179,8,0.2)', tension: 0.4 },
+                        { label: 'Izin', data: keys.map(k=>dataMap[k].I), borderColor: '#3b82f6', fill: true, backgroundColor: 'rgba(59,130,246,0.2)', tension: 0.4 },
+                        { label: 'Alpha', data: keys.map(k=>dataMap[k].A), borderColor: '#dc2626', fill: true, backgroundColor: 'rgba(220,38,38,0.2)', tension: 0.4 }
                     ]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top' } },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true, 
-                            max: 100, 
-                            ticks: { stepSize: 10 } 
-                        } 
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
             });
         }
     </script>
