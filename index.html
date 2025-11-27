@@ -16,7 +16,6 @@
         
         .sidebar { transition: transform 0.3s ease-in-out; }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #006838; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
-        .db-spinner { width: 30px; height: 30px; border: 4px solid #e5e7eb; border-top: 4px solid #16a34a; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
@@ -116,9 +115,7 @@
                         </button>
                         <p id="loginError" class="text-red-500 text-xs mt-3 text-center hidden"></p>
                     </form>
-                    <div class="mt-6 pt-4 border-t border-gray-100 flex justify-center items-center h-12">
-                        <div id="dbStatus" class="flex items-center justify-center transition-all duration-300"><div class="db-spinner"></div></div>
-                    </div>
+                    <!-- Indikator DB Status dihapus agar lebih bersih -->
                 </div>
             </div>
 
@@ -226,9 +223,19 @@
         
         let usersData = [], studentsDataRaw = [], currentUser = null, chartInstance = null;
         let listKamar = new Set(), listKelas = new Set();
+        
+        // Global state untuk loading
+        let dataReady = false;
+        let dataError = null;
+        let loadDataPromise = null;
 
-        window.onload = async () => {
-            const dbStatus = document.getElementById('dbStatus');
+        // --- INIT ---
+        window.onload = () => {
+            // Simpan promise agar bisa ditunggu saat login
+            loadDataPromise = initData();
+        };
+
+        async function initData() {
             try {
                 const uRes = await fetch(URL_USER_CSV);
                 const uText = await uRes.text();
@@ -240,15 +247,15 @@
                 if(sJson.result === 'success') {
                     studentsDataRaw = sJson.data;
                     processGroups();
-                    dbStatus.innerHTML = `<i class="fas fa-check-circle text-4xl text-green-500 animate-bounce"></i>`;
+                    dataReady = true;
                 } else {
                     throw new Error("Gagal ambil data santri");
                 }
             } catch (e) {
-                console.error(e);
-                dbStatus.innerHTML = `<i class="fas fa-times-circle text-3xl text-red-500"></i>`;
+                dataError = e;
+                console.error("Init Error:", e);
             }
-        };
+        }
 
         function parseCSV(text) {
             const lines = text.trim().split('\n');
@@ -299,11 +306,32 @@
         }
 
         // AUTH
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            document.getElementById('loginLoader').classList.remove('hidden');
+            const loader = document.getElementById('loginLoader');
+            const err = document.getElementById('loginError');
+
+            loader.classList.remove('hidden');
+            err.classList.add('hidden');
+
+            // 1. TUNGGU DATA JIKA BELUM SIAP
+            if (!dataReady && !dataError) {
+                try {
+                    await loadDataPromise;
+                } catch (e) { /* Error ditangani via dataError check */ }
+            }
+
+            // 2. CEK JIKA ADA ERROR PADA BACKEND
+            if (dataError) {
+                err.innerText = "Gagal menghubungi server database. Periksa koneksi internet Anda.";
+                err.classList.remove('hidden');
+                loader.classList.add('hidden');
+                return;
+            }
+
+            // 3. PROSES LOGIN
             setTimeout(() => {
                 const user = usersData.find(x => x.username === u && x.password === p);
                 if(user) {
@@ -314,10 +342,10 @@
                     document.getElementById('sidebarRole').innerText = user.role;
                     generateMenu(user.role);
                 } else {
-                    document.getElementById('loginError').innerText = "Login Gagal!";
-                    document.getElementById('loginError').classList.remove('hidden');
+                    err.innerText = "Username/Password Salah!";
+                    err.classList.remove('hidden');
                 }
-                document.getElementById('loginLoader').classList.add('hidden');
+                loader.classList.add('hidden');
             }, 500);
         }
 
@@ -381,7 +409,6 @@
             
             tbody.innerHTML = '';
             filtered.forEach((s, i) => {
-                // Row without Hadir button, only S, I, A and Reset
                 const html = `
                     <tr class="hover:bg-gray-50 border-b" data-id="${s[0]}" data-nama="${s[1]}">
                         <td class="text-center p-2">${i+1}</td>
@@ -420,7 +447,6 @@
             container.classList.remove('hidden');
         }
 
-        // Helper to clear radio selection for a row
         window.resetRow = function(index) {
             const radios = document.getElementsByName(`status-${index}`);
             radios.forEach(r => r.checked = false);
@@ -443,10 +469,8 @@
                 const id = tr.dataset.id;
                 const nama = tr.dataset.nama;
                 const statusInput = tr.querySelector('input[type="radio"]:checked');
-                // Jika tidak ada yang dicek, statusnya null (Hadir implisit)
                 const status = statusInput ? statusInput.value : null;
                 
-                // HANYA KIRIM JIKA ADA STATUS (S/I/A)
                 if (status) {
                     entries.push({ id: id, nama: nama, status: status });
                 }
@@ -552,10 +576,8 @@
         }
 
         function updateChart(rows) {
-            // --- FIX DATE LOGIC ---
             const curr = new Date();
             const day = curr.getDay(); 
-            // Monday of current week
             const diff = curr.getDate() - day + (day === 0 ? -6 : 1); 
             const monday = new Date(curr.setDate(diff));
 
@@ -565,7 +587,6 @@
             for(let i=0; i<7; i++) {
                 let temp = new Date(monday);
                 temp.setDate(monday.getDate()+i);
-                // Force format YYYY-MM-DD local time to avoid UTC shift issues
                 const y = temp.getFullYear();
                 const m = String(temp.getMonth()+1).padStart(2, '0');
                 const d = String(temp.getDate()).padStart(2, '0');
@@ -576,7 +597,6 @@
 
             rows.forEach(r => {
                 let dateKey = "";
-                // r[6] is DateClean (YYYY-MM-DD) from backend
                 if(r[6]) dateKey = r[6].substring(0,10);
                 else if(r[0]) { 
                     try { 
