@@ -104,7 +104,6 @@
                         <button onclick="openModal('signupModal')" class="text-xs text-green-600 hover:underline font-bold">Daftar Akun Baru</button>
                     </div>
                     <p id="loginError" class="text-red-500 text-xs mt-3 text-center hidden font-bold"></p>
-                    <p id="defaultUserHint" class="text-gray-400 text-[10px] text-center mt-4 hidden">Database Kosong. Gunakan admin/admin</p>
                 </div>
             </div>
 
@@ -414,7 +413,7 @@
 
             setTimeout(() => {
                 const user = usersData.find(x => String(x.username).toLowerCase() === uInput.toLowerCase() && String(x.password) === pInput);
-                const isEmergency = (usersData.length===0 && uInput==='admin' && pInput==='admin');
+                const isEmergency = (usersData.length===0 && uInput==='SiJaoGithub' && pInput==='Dulido@216326');
 
                 if(user || isEmergency) {
                     currentUser = user ? user : {username:'Admin', role:'admin', photo:''};
